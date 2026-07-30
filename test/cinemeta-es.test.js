@@ -180,6 +180,10 @@ test("translates catalog cards and maps Spanish genre filters upstream", async (
                 moviedb_id: 603,
                 name: "The Matrix",
                 description: "English overview",
+                videos: [{ id: "tt0133093:1:1" }],
+                trailers: [{ source: "english-trailer" }],
+                trailerStreams: [{ ytId: "english-trailer" }],
+                links: [{ name: "Action", category: "Genres" }],
               },
             ],
           });
@@ -212,4 +216,8 @@ test("translates catalog cards and maps Spanish genre filters upstream", async (
     payload.metas[0].logo,
     "https://image.tmdb.org/t/p/w500/catalog-logo.png",
   );
+  assert.equal("videos" in payload.metas[0], false);
+  assert.equal("trailers" in payload.metas[0], false);
+  assert.equal("trailerStreams" in payload.metas[0], false);
+  assert.equal("links" in payload.metas[0], false);
 });

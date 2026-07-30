@@ -349,9 +349,17 @@ async function translateCatalogMeta(
   meta,
   { fetchImpl, tmdbApiKey },
 ) {
+  const compact = (value) => {
+    const card = { ...value };
+    delete card.videos;
+    delete card.trailerStreams;
+    delete card.trailers;
+    delete card.links;
+    return card;
+  };
   const tmdbId = meta?.moviedb_id;
   if (!tmdbId) {
-    return meta;
+    return compact(meta);
   }
 
   try {
@@ -359,9 +367,9 @@ async function translateCatalogMeta(
       fetchImpl,
       tmdbApiKey,
     });
-    return overlayTmdbMeta(type, meta, details);
+    return compact(overlayTmdbMeta(type, meta, details));
   } catch {
-    return meta;
+    return compact(meta);
   }
 }
 
