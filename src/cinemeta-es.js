@@ -167,6 +167,25 @@ function tmdbImage(path, size) {
     : null;
 }
 
+function localizedLogo(images, fallbackLogo) {
+  const logos = Array.isArray(images?.logos) ? [...images.logos] : [];
+  const languageRank = (language) => {
+    if (language === "es") return 0;
+    if (language == null) return 1;
+    if (language === "en") return 2;
+    return 3;
+  };
+
+  logos.sort(
+    (a, b) =>
+      languageRank(a?.iso_639_1) - languageRank(b?.iso_639_1) ||
+      Number(b?.vote_average ?? 0) - Number(a?.vote_average ?? 0) ||
+      Number(b?.width ?? 0) - Number(a?.width ?? 0),
+  );
+
+  return tmdbImage(logos[0]?.file_path, "w500") || fallbackLogo;
+}
+
 function isoDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ""))
     ? `${value}T00:00:00.000Z`
@@ -241,6 +260,7 @@ function overlayTmdbMeta(type, meta, details) {
     poster: tmdbImage(details.poster_path, "w500") || meta.poster,
     background:
       tmdbImage(details.backdrop_path, "w1280") || meta.background,
+    logo: localizedLogo(details.images, meta.logo),
     cast:
       details.credits?.cast
         ?.slice(0, 10)
@@ -283,7 +303,6 @@ function overlayTmdbMeta(type, meta, details) {
   }
 
   delete translated.awards;
-  delete translated.logo;
   return translated;
 }
 
@@ -317,9 +336,11 @@ async function tmdbDetails(
   const url = new URL(`${TMDB_BASE_URL}/${tmdbType}/${tmdbId}`);
   url.searchParams.set("api_key", tmdbApiKey);
   url.searchParams.set("language", "es-419");
-  if (extended) {
-    url.searchParams.set("append_to_response", "credits");
-  }
+  url.searchParams.set(
+    "append_to_response",
+    extended ? "credits,images" : "images",
+  );
+  url.searchParams.set("include_image_language", "es,null,en");
   return fetchJson(url, fetchImpl);
 }
 
