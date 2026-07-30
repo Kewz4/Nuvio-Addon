@@ -88,9 +88,8 @@ Vercel is the easiest deployment option for this repository:
 5. Install `https://your-project.vercel.app/manifest.json` in Nuvio.
 
 Vercel detects the exported Express application in `src/server.js` and serves
-the files in `public/` through its CDN. The included `vercel.json` gives stream
-lookups up to 30 seconds. No environment variables are required for the bundled
-household configuration.
+the files in `public/` through its CDN. No framework preset, build command, or
+environment variables are required for the bundled household configuration.
 
 ### Docker or Render
 

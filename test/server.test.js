@@ -12,7 +12,7 @@ const fixedConfig = {
   ],
 };
 
-test("exports the Express application for Vercel auto-detection", () => {
+test("exports the Express application for zero-config Vercel detection", () => {
   assert.equal(typeof defaultApp, "function");
   assert.equal(typeof defaultApp.listen, "function");
 });
