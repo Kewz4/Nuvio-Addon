@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Crea un addon de Nuvio con una sola opción por idioma y resolución."
+    />
+    <title>Selección simple para Nuvio</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="eyebrow">
+          <img src="/icon.svg" alt="" width="28" height="28" />
+          Nuvio + Stremio
+        </div>
+        <h1 id="page-title">Menos opciones.<br />La correcta, primero.</h1>
+        <p class="intro">
+          Combina tus proveedores en una lista tranquila: una tarjeta por
+          idioma y resolución, sin nombres de archivos ni detalles técnicos.
+        </p>
+
+        <div class="preview" aria-label="Ejemplo de resultados simplificados">
+          <article>
+            <strong>Latino <span>·</span> 4K</strong>
+            <small>Listo para reproducir</small>
+          </article>
+          <article>
+            <strong>Latino <span>·</span> 1080p</strong>
+            <small>Listo para reproducir</small>
+          </article>
+          <article>
+            <strong>Castellano <span>·</span> 4K</strong>
+            <small>Listo para reproducir</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="setup" aria-labelledby="setup-title">
+        <div class="section-heading">
+          <span class="step">Configuración</span>
+          <h2 id="setup-title">Pega tus manifestos</h2>
+          <p>
+            Usa la URL completa de <code>manifest.json</code> que ya tienes
+            configurada para cada proveedor. Puedes dejar campos vacíos.
+          </p>
+        </div>
+
+        <div id="notice" class="notice" role="status" hidden></div>
+
+        <form id="config-form">
+          <label>
+            <span><b>1</b> Progreso Latino <em>Primera prioridad</em></span>
+            <input
+              name="progresoLatino"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              placeholder="https://…/manifest.json"
+            />
+          </label>
+          <label>
+            <span><b>2</b> Peerflix</span>
+            <input
+              name="peerflix"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              placeholder="https://…/manifest.json"
+            />
+          </label>
+          <label>
+            <span><b>3</b> Cometa</span>
+            <input
+              name="cometa"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              placeholder="https://…/manifest.json"
+            />
+          </label>
+          <label>
+            <span><b>4</b> MediaFusion</span>
+            <input
+              name="mediafusion"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              placeholder="https://…/manifest.json"
+            />
+          </label>
+
+          <button id="create-button" type="submit">
+            Crear enlace privado
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <section id="result" class="result" aria-labelledby="result-title" hidden>
+          <div>
+            <span class="success-dot" aria-hidden="true"></span>
+            <div>
+              <h3 id="result-title">Tu addon está listo</h3>
+              <p>Pega este enlace en Nuvio y desactiva los addons originales.</p>
+            </div>
+          </div>
+          <output id="manifest-url"></output>
+          <div class="actions">
+            <button id="copy-button" class="secondary" type="button">
+              Copiar enlace
+            </button>
+            <a id="stremio-button" class="button secondary" href="#">
+              Abrir en Stremio
+            </a>
+          </div>
+        </section>
+
+        <p class="privacy">
+          Las URLs se cifran dentro del enlace. Este servicio no guarda una
+          cuenta ni una copia de tu configuración.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
