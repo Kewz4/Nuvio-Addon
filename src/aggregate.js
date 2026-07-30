@@ -73,6 +73,20 @@ function simplifyStream(stream, classification, language) {
   delete simplified.title;
   delete simplified.description;
 
+  if (
+    simplified.behaviorHints &&
+    typeof simplified.behaviorHints === "object"
+  ) {
+    const behaviorHints = { ...simplified.behaviorHints };
+    delete behaviorHints.videoSize;
+
+    if (Object.keys(behaviorHints).length > 0) {
+      simplified.behaviorHints = behaviorHints;
+    } else {
+      delete simplified.behaviorHints;
+    }
+  }
+
   return simplified;
 }
 

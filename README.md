@@ -12,8 +12,9 @@ Inglés · 4K
 ```
 
 The playable URL, torrent hash, debrid instructions, file index, proxy headers,
-and other playback fields are preserved. Only the visible `name`, `title`, and
-`description` are simplified.
+and other playback fields are preserved. The visible `name`, `title`, and
+`description` are simplified, and `behaviorHints.videoSize` is removed so Nuvio
+does not add a `SIZE … GB` badge.
 
 This repository includes the owner's four configured provider manifests in
 `src/bundled-config.js`, so `/manifest.json` is ready to install immediately.

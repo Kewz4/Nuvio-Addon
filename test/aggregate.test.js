@@ -54,7 +54,11 @@ test("deduplicates language/resolution combinations by provider priority", async
             name: "4K",
             description: "Toy Story 5\nLatino",
             url: "https://play.example/progreso-4k",
-            behaviorHints: { filename: "toy-story-5-2160p.mkv" },
+            behaviorHints: {
+              filename: "toy-story-5-2160p.mkv",
+              bingeGroup: "toy-story-5",
+              videoSize: 58_800_000_000,
+            },
           },
           {
             name: "FHD",
@@ -129,6 +133,7 @@ test("deduplicates language/resolution combinations by provider priority", async
   );
   assert.deepEqual(streams[0].behaviorHints, {
     filename: "toy-story-5-2160p.mkv",
+    bingeGroup: "toy-story-5",
   });
   assert.equal("description" in streams[0], false);
   assert.equal(streams[2].fileIdx, 3);
