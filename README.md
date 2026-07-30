@@ -17,7 +17,8 @@ and other playback fields are preserved. The visible `name`, `title`, and
 does not add a `SIZE … GB` badge.
 
 This repository includes the owner's four configured provider manifests in
-`src/bundled-config.js`, so `/manifest.json` is ready to install immediately.
+`src/bundled-config.js`, plus the bundled **Latino Providers** Nuvio scraper
+plugin, so `/manifest.json` is ready to install immediately.
 Those URLs contain personalized credentials. Keep the repository private and
 replace or remove that file before sharing a fork.
 
@@ -29,6 +30,7 @@ Providers have a fixed priority:
 2. Peerflix
 3. Cometa
 4. MediaFusion
+5. Latino Providers
 
 The first stream found for a language/resolution combination wins. A
 multi-audio release can therefore produce separate cards such as
@@ -40,6 +42,10 @@ resolution are omitted because they cannot produce a trustworthy simple card.
 Language detection understands common names, codes, flag emoji, and
 MediaFusion's parsed `clientResolve.stream.raw.parsed.languages` metadata.
 Progreso Latino, Peerflix, and Cometa also have sensible Spanish fallbacks.
+The Latino Providers plugin fills any remaining language/resolution gaps after
+the four add-ons. Its ten scraper modules are vendored from commit
+`c973db771bfc37efc0974a5486c5890eb0a73cbd` so deployments do not execute
+changing remote JavaScript.
 
 ## Run locally
 
@@ -75,6 +81,23 @@ https://your-domain.example/manifest.json
 ```
 
 This mode is the simplest option for one household.
+
+### Spanish Cinemeta add-on
+
+The same deployment exposes a second installable add-on:
+
+```text
+https://your-domain.example/cinemeta-es/manifest.json
+```
+
+It keeps Cinemeta's IMDb IDs, catalogs, episode structure, and discovery
+filters, then overlays Latin Spanish titles, descriptions, genres, artwork,
+cast, runtime, status, and episode names/descriptions from TMDB. If a Spanish
+translation is unavailable, the original Cinemeta field is kept.
+
+In Nuvio, install **Cinemeta en Español**, put it above the original Cinemeta
+in the add-on order, and disable the original Cinemeta catalogs to avoid
+duplicate English rows.
 
 ## Deploy
 
@@ -128,7 +151,8 @@ self-hosted setup can opt in with `ALLOW_PRIVATE_UPSTREAMS=true`.
 1. Copy the generated HTTPS `manifest.json` URL.
 2. Add it in Nuvio's add-on settings.
 3. Disable or uninstall the original Progreso Latino, Peerflix, Cometa, and
-   MediaFusion add-ons on the profile your mom uses.
+   MediaFusion add-ons, plus the separately installed Latino Providers plugin,
+   on the profile your mom uses.
 4. Set Nuvio's preferred audio language to Spanish/Latin Spanish when using
    multi-audio releases.
 

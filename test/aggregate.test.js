@@ -182,6 +182,58 @@ test("keeps successful providers when another upstream fails", async () => {
   assert.deepEqual(errors, [["progresoLatino", "HTTP 502"]]);
 });
 
+test("uses the Latino plugin after the existing add-on providers", async () => {
+  const streams = await aggregateStreams(
+    {
+      providers: [
+        {
+          id: "mediafusion",
+          manifestUrl: "https://media.example/manifest.json",
+        },
+        {
+          id: "latinoProviders",
+          manifestUrl:
+            "https://raw.githubusercontent.com/example/plugin/manifest.json",
+        },
+      ],
+    },
+    "series",
+    "tmdb:1396:1:1",
+    {
+      fetchImpl: async () =>
+        jsonResponse({
+          streams: [
+            {
+              name: "MediaFusion 1080p",
+              description: "Latino",
+              url: "https://video.example/mediafusion",
+            },
+          ],
+        }),
+      latinoPluginFetcher: async () => [
+        {
+          name: "SeriesMetro",
+          title: "1080p · Latino",
+          url: "https://video.example/plugin-duplicate",
+        },
+        {
+          name: "SeriesMetro",
+          title: "720p · Latino",
+          url: "https://video.example/plugin-gap",
+        },
+      ],
+    },
+  );
+
+  assert.deepEqual(
+    streams.map((stream) => [stream.name, stream.url]),
+    [
+      ["Latino · 1080p", "https://video.example/mediafusion"],
+      ["Latino · 720p", "https://video.example/plugin-gap"],
+    ],
+  );
+});
+
 test("response cache expires entries", (context) => {
   context.mock.timers.enable({ apis: ["Date"], now: 1_000 });
   const cache = new ResponseCache(500);

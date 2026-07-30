@@ -17,11 +17,13 @@ test("normalizes providers in the required priority order", () => {
     progresoLatino: "https://progreso.example/config/manifest.json",
     peerflix: "",
     cometa: "https://cometa.example/manifest.json",
+    latinoProviders:
+      "https://raw.githubusercontent.com/example/plugin/manifest.json",
   });
 
   assert.deepEqual(
     config.providers.map((provider) => provider.id),
-    ["progresoLatino", "cometa", "mediafusion"],
+    ["progresoLatino", "cometa", "mediafusion", "latinoProviders"],
   );
 });
 

@@ -23,6 +23,13 @@ export const PROVIDERS = Object.freeze([
     envName: "MEDIAFUSION_URL",
     fallbackLanguage: null,
   },
+  {
+    id: "latinoProviders",
+    name: "Latino Providers",
+    envName: "LATINO_PROVIDERS_PLUGIN_URL",
+    fallbackLanguage: "Latino",
+    kind: "nuvioPlugin",
+  },
 ]);
 
 export const PROVIDER_BY_ID = new Map(

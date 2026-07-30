@@ -4,6 +4,7 @@ import {
   languageRank,
 } from "./classify.js";
 import { assertPublicManifestHost } from "./config.js";
+import { fetchLatinoPluginStreams } from "./latino-plugin.js";
 import { PROVIDER_BY_ID } from "./providers.js";
 
 const DEFAULT_TIMEOUT_MS = 12_000;
@@ -19,11 +20,30 @@ async function fetchUpstream(
   providerConfig,
   type,
   id,
-  { fetchImpl, timeoutMs, verifyUpstreamAddress },
+  {
+    fetchImpl,
+    timeoutMs,
+    verifyUpstreamAddress,
+    latinoPluginFetcher,
+    onProviderError,
+  },
 ) {
   const provider = PROVIDER_BY_ID.get(providerConfig.id);
   if (!provider) {
     throw new Error(`Unknown provider: ${providerConfig.id}`);
+  }
+
+  if (provider.kind === "nuvioPlugin") {
+    return {
+      provider,
+      streams: await latinoPluginFetcher(type, id, {
+        fetchImpl,
+        timeoutMs,
+        onScraperError(scraperId, error) {
+          onProviderError(`${provider.id}/${scraperId}`, error);
+        },
+      }),
+    };
   }
 
   const url = buildUpstreamStreamUrl(providerConfig.manifestUrl, type, id);
@@ -99,6 +119,7 @@ export async function aggregateStreams(
     timeoutMs = DEFAULT_TIMEOUT_MS,
     verifyUpstreamAddress = false,
     onProviderError = () => {},
+    latinoPluginFetcher = fetchLatinoPluginStreams,
   } = {},
 ) {
   if (typeof fetchImpl !== "function") {
@@ -110,6 +131,8 @@ export async function aggregateStreams(
       fetchImpl,
       timeoutMs,
       verifyUpstreamAddress,
+      latinoPluginFetcher,
+      onProviderError,
     }),
   );
   const results = await Promise.allSettled(requests);

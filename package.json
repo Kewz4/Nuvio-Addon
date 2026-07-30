@@ -1,6 +1,6 @@
 {
   "name": "nuvio-simple-streams",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "A small Stremio-compatible proxy that simplifies Nuvio stream choices.",
   "type": "module",
@@ -10,9 +10,10 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test",
-    "check": "node --check src/server.js && node --check src/aggregate.js && node --check src/classify.js && node --check src/config.js"
+    "check": "node --check src/server.js && node --check src/aggregate.js && node --check src/classify.js && node --check src/config.js && node --check src/latino-plugin.js && node --check src/cinemeta-es.js"
   },
   "dependencies": {
+    "crypto-js": "4.2.0",
     "dotenv": "16.6.1",
     "express": "5.1.0"
   }

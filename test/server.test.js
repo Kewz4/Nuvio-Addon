@@ -160,5 +160,16 @@ test("uses the bundled household configuration by default", async (t) => {
 
   assert.equal(status.fixedAddonReady, true);
   assert.equal(status.fixedManifestUrl, `${baseUrl}/manifest.json`);
+  assert.equal(
+    status.spanishCinemetaManifestUrl,
+    `${baseUrl}/cinemeta-es/manifest.json`,
+  );
   assert.equal(addonManifest.behaviorHints.configurationRequired, false);
+
+  const spanishManifestResponse = await fetch(
+    `${baseUrl}/cinemeta-es/manifest.json`,
+  );
+  const spanishManifest = await spanishManifestResponse.json();
+  assert.equal(spanishManifest.name, "Cinemeta en Español");
+  assert.equal(spanishManifest.language, "es-419");
 });

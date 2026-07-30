@@ -5,6 +5,11 @@ import express from "express";
 import { aggregateStreams, ResponseCache } from "./aggregate.js";
 import { BUNDLED_PROVIDER_URLS } from "./bundled-config.js";
 import {
+  fetchSpanishCatalog,
+  fetchSpanishMeta,
+  spanishCinemetaManifest,
+} from "./cinemeta-es.js";
+import {
   allowPrivateUpstreamsFromEnv,
   decryptConfig,
   encryptConfig,
@@ -30,10 +35,10 @@ function requestBaseUrl(request, env) {
 function manifest(baseUrl, { configured }) {
   return {
     id: "community.nuvio-simple-streams",
-    version: "1.0.0",
+    version: "1.1.0",
     name: "Selección simple",
     description:
-      "Una sola opción por idioma y resolución, priorizando Progreso Latino, Peerflix, Cometa y MediaFusion.",
+      "Una sola opción por idioma y resolución, con Latino Providers para completar opciones faltantes.",
     logo: `${baseUrl}/icon.svg`,
     resources: [
       {
@@ -95,6 +100,12 @@ export function createApp({
   const cache = new ResponseCache(
     parsePositiveNumber(env.CACHE_TTL_MS, 60_000),
   );
+  const cinemetaCatalogCache = new ResponseCache(
+    parsePositiveNumber(env.CINEMETA_CATALOG_CACHE_TTL_MS, 30 * 60_000),
+  );
+  const cinemetaMetaCache = new ResponseCache(
+    parsePositiveNumber(env.CINEMETA_META_CACHE_TTL_MS, 6 * 60 * 60_000),
+  );
 
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
@@ -136,6 +147,7 @@ export function createApp({
       fixedManifestUrl: configuredFromEnvironment
         ? `${requestBaseUrl(request, env)}/manifest.json`
         : null,
+      spanishCinemetaManifestUrl: `${requestBaseUrl(request, env)}/cinemeta-es/manifest.json`,
     });
   });
 
@@ -168,6 +180,86 @@ export function createApp({
       }),
     );
   });
+
+  app.get("/cinemeta-es/manifest.json", (request, response) => {
+    response.set("cache-control", "public, max-age=3600");
+    response.json(
+      spanishCinemetaManifest(requestBaseUrl(request, env)),
+    );
+  });
+
+  async function sendSpanishCatalog(request, response, next) {
+    const { type, catalogId } = request.params;
+    const extra = request.params.extra ?? "";
+    const cacheKey = `${type}\u0000${catalogId}\u0000${extra}`;
+    const cached = cinemetaCatalogCache.get(cacheKey);
+    if (cached) {
+      response.set("x-cinemeta-es-cache", "hit");
+      response.set("cache-control", "public, max-age=300");
+      response.json(cached);
+      return;
+    }
+
+    try {
+      const payload = await fetchSpanishCatalog(type, catalogId, extra, {
+        fetchImpl,
+        tmdbApiKey: env.TMDB_API_KEY,
+      });
+      if (!payload) {
+        response.status(404).json({ error: "Catálogo no encontrado." });
+        return;
+      }
+
+      cinemetaCatalogCache.set(cacheKey, payload);
+      response.set("x-cinemeta-es-cache", "miss");
+      response.set("cache-control", "public, max-age=300");
+      response.json(payload);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  app.get(
+    "/cinemeta-es/catalog/:type/:catalogId.json",
+    sendSpanishCatalog,
+  );
+  app.get(
+    "/cinemeta-es/catalog/:type/:catalogId/:extra.json",
+    sendSpanishCatalog,
+  );
+
+  app.get(
+    "/cinemeta-es/meta/:type/:id.json",
+    async (request, response, next) => {
+      const { type, id } = request.params;
+      const cacheKey = `${type}\u0000${id}`;
+      const cached = cinemetaMetaCache.get(cacheKey);
+      if (cached) {
+        response.set("x-cinemeta-es-cache", "hit");
+        response.set("cache-control", "public, max-age=3600");
+        response.json(cached);
+        return;
+      }
+
+      try {
+        const payload = await fetchSpanishMeta(type, id, {
+          fetchImpl,
+          tmdbApiKey: env.TMDB_API_KEY,
+        });
+        if (!payload) {
+          response.status(404).json({ error: "Metadatos no encontrados." });
+          return;
+        }
+
+        cinemetaMetaCache.set(cacheKey, payload);
+        response.set("x-cinemeta-es-cache", "miss");
+        response.set("cache-control", "public, max-age=3600");
+        response.json(payload);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   async function sendStreams(request, response, config, cachePrefix) {
     if (!config) {

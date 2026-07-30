@@ -10,6 +10,7 @@ const LANGUAGE_ORDER = new Map([
   ["Japonés", 8],
   ["Coreano", 9],
   ["Ruso", 10],
+  ["Subtitulado", 11],
   ["Multidioma", 99],
 ]);
 
@@ -90,6 +91,11 @@ const LANGUAGE_RULES = [
     label: "Ruso",
     codes: ["ru", "rus", "russian"],
     patterns: [/\bruso\b/i, /\brussian\b/i, /🇷🇺/],
+  },
+  {
+    label: "Subtitulado",
+    codes: ["sub", "vose"],
+    patterns: [/\bsubtitulado\b/i, /\bsubbed\b/i, /\bvose\b/i],
   },
 ];
 
