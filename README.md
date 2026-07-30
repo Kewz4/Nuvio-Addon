@@ -84,12 +84,18 @@ Vercel is the easiest deployment option for this repository:
 1. Push the repository to GitHub.
 2. In Vercel, choose **Add New → Project**.
 3. Import `Kewz4/Nuvio-Addon`.
-4. Keep the detected defaults and deploy.
+4. Keep the detected defaults and deploy. Do not set a build command or output
+   directory.
 5. Install `https://your-project.vercel.app/manifest.json` in Nuvio.
 
-Vercel detects the exported Express application in `src/server.js` and serves
-the files in `public/` through its CDN. No framework preset, build command, or
-environment variables are required for the bundled household configuration.
+`api/index.js` exposes the Express application as a Vercel Function, and
+`vercel.json` rewrites add-on requests to it. No framework preset, build
+command, output directory, or environment variables are required for the
+bundled household configuration.
+
+Use the domain shown under **Project → Settings → Domains**. A similarly named
+`*.vercel.app` domain may belong to another project, and generated deployment
+URLs can be protected by Vercel Authentication.
 
 ### Docker or Render
 

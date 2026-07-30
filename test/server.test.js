@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { once } from "node:events";
+import vercelApp from "../api/index.js";
 import defaultApp, { createApp } from "../src/server.js";
 
 const fixedConfig = {
@@ -12,9 +13,10 @@ const fixedConfig = {
   ],
 };
 
-test("exports the Express application for zero-config Vercel detection", () => {
+test("exports the Express application through the Vercel API entrypoint", () => {
   assert.equal(typeof defaultApp, "function");
   assert.equal(typeof defaultApp.listen, "function");
+  assert.equal(vercelApp, defaultApp);
 });
 
 test("serves a valid manifest, simplified streams, CORS, and cache hits", async (t) => {
